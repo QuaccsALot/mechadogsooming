@@ -45,6 +45,7 @@ public class ShooterSubsystem {
   // private double actuatorCommand = 0;
 
   // private final Timer actuatorTimer = new Timer();
+  //IDK HOW ENCODER DOES STUFF
 
   public ShooterSubsystem() {
 
@@ -68,6 +69,8 @@ public class ShooterSubsystem {
       intakeCfg.inverted(false);
       intakeMotor.configure(intakeCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
+
+
 
   public void runShooter(double trigger) {
 
@@ -95,5 +98,4 @@ public void toggleIntake() {
     intakeOn = !intakeOn;
     runIntake(intakeOn ? 1 : 0);
 }
-
 }

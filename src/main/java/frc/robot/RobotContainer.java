@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj.PS4Controller;
 
+
 public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -21,11 +22,16 @@ public class RobotContainer {
     return drive;
   }
 
-  private boolean cintake = false;
-  private boolean pcIntake = false;
 
-  private boolean crintake = false;
-  private boolean pcrIntake = false;
+
+  // private boolean cintake = false;
+  // private boolean pcIntake = false;
+
+  // private boolean crintake = false;
+  // private boolean pcrIntake = false;
+private int intakeState = 0; // 1 = forward, -1 = reverse, 0 = off
+private boolean pcIntake = false;
+private boolean pcrIntake = false;
 
   private final PS4Controller controller =
       new PS4Controller(Constants.ControllerConstants.DRIVER_PORT);
@@ -67,33 +73,74 @@ double tx = table.getEntry("tx").getDouble(0.0);
     shooter.runClimber(0.0);
   }
 
-  boolean tCircleIntake = controller.getCircleButton();
+// GPT code start =========================================================================================
 
-  if (tCircleIntake && !pcIntake) {
-    cintake = !cintake;
+  boolean tCircle = controller.getCircleButton();
+boolean tCross = controller.getCrossButton();
+
+// Toggle forward (Circle)
+if (tCircle && !pcIntake) {
+  if (intakeState == 1) {
+    intakeState = 0;   // turn off
+  } else {
+    intakeState = 1;   // forward
   }
+}
 
-  pcIntake = tCircleIntake;
-
-  if (cintake == true) {
-    shooter.runIntake(1.0);
-  } else if (cintake == false) {
-    shooter.runIntake(0.0);
+// Toggle reverse (Cross)
+if (tCross && !pcrIntake) {
+  if (intakeState == -1) {
+    intakeState = 0;   // turn off
+  } else {
+    intakeState = -1;  // reverse
   }
+}
 
-boolean tCrossIntake = controller.getCrossButton();
+// Save previous states
+pcIntake = tCircle;
+pcrIntake = tCross;
 
-  if (tCrossIntake && !pcrIntake) {
-    crintake = !crintake;
-  }
+// Apply motor output
+if (intakeState == 1) {
+  shooter.runIntake(1.0);
+} else if (intakeState == -1) {
+  shooter.runIntake(-1.0);
+} else {
+  shooter.runIntake(0.0);
+}
 
-  pcrIntake = tCrossIntake;
 
-  if (crintake == true) {
-    shooter.runIntake(-1.0);
-  } else if (crintake == false) {
-    shooter.runIntake(0.0);
-  }
+//gpt code end ==========================================================================================
+
+
+
+//   boolean tCircleIntake = controller.getCircleButton();
+
+//   if (tCircleIntake && !pcIntake) {
+//     cintake = !cintake;
+//   }
+
+//   pcIntake = tCircleIntake;
+
+//   if (cintake == true) {
+//     shooter.runIntake(1.0);
+//   } else if (cintake == false) {
+//     shooter.runIntake(0.0);
+//   }
+
+// boolean tCrossIntake = controller.getCrossButton();
+
+//   if (tCrossIntake && !pcrIntake) {
+//     crintake = !crintake;
+//   }
+
+//   pcrIntake = tCrossIntake;
+
+//   if (crintake == true) {
+//     shooter.runIntake(-1.0);
+//   } else if (crintake == false) {
+//     shooter.runIntake(0.0);
+//   }
 
 
   // Put autochoosers and smartdashboard into constructor, not into here
