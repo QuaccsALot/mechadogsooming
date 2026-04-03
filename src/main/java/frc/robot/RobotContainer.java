@@ -73,10 +73,8 @@ double tx = table.getEntry("tx").getDouble(0.0);
     shooter.runClimber(0.0);
   }
 
-// GPT code start =========================================================================================
-
   boolean tCircle = controller.getCircleButton();
-boolean tCross = controller.getCrossButton();
+  boolean tCross = controller.getCrossButton();
 
 // Toggle forward (Circle)
 if (tCircle && !pcIntake) {
@@ -109,8 +107,6 @@ if (intakeState == 1) {
   shooter.runIntake(0.0);
 }
 
-
-//gpt code end ==========================================================================================
 
 
 
