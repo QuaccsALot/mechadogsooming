@@ -10,28 +10,36 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.Autos;
 import edu.wpi.first.wpilibj.PS4Controller;
 
-
 public class RobotContainer {
+
+  public RobotContainer() {
+     autoChooser.setDefaultOption("Drive and Shoot", new Autos(drive, shooter));
+  autoChooser.addOption("Do Nothing", null);
+
+  SmartDashboard.putData("Auto Modes", autoChooser);
+  }
+
+  public Command getAutonomousCommand() {
+  return autoChooser.getSelected();
+}
 
   private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   private final DriveSubsystem drive = new DriveSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
+
+
+
   public DriveSubsystem getDrive() {
     return drive;
   }
 
+  private boolean cintake = false;
+  private boolean pcIntake = false;
 
-
-  // private boolean cintake = false;
-  // private boolean pcIntake = false;
-
-  // private boolean crintake = false;
-  // private boolean pcrIntake = false;
-private int intakeState = 0; // 1 = forward, -1 = reverse, 0 = off
-private boolean pcIntake = false;
-private boolean pcrIntake = false;
+  private boolean crintake = false;
+  private boolean pcrIntake = false;
 
   private final PS4Controller controller =
       new PS4Controller(Constants.ControllerConstants.DRIVER_PORT);
@@ -56,6 +64,8 @@ double tx = table.getEntry("tx").getDouble(0.0);
   SmartDashboard.putNumber("Limelight Y", ty);
   SmartDashboard.putNumber("Limelight Area", ta);
   SmartDashboard.putNumber("Limelight Detection", tv);
+  SmartDashboard.putNumber("LeftY", controller.getLeftY());
+  SmartDashboard.putNumber("RightY", controller.getRightY());
   
   
   shooter.runShooter(controller.getR2Axis());
@@ -73,79 +83,43 @@ double tx = table.getEntry("tx").getDouble(0.0);
     shooter.runClimber(0.0);
   }
 
-  boolean tCircle = controller.getCircleButton();
-  boolean tCross = controller.getCrossButton();
+  boolean tCircleIntake = controller.getCircleButton();
 
-// Toggle forward (Circle)
-if (tCircle && !pcIntake) {
-  if (intakeState == 1) {
-    intakeState = 0;   // turn off
-  } else {
-    intakeState = 1;   // forward
+  if (tCircleIntake && !pcIntake) {
+    cintake = !cintake;
   }
-}
 
-// Toggle reverse (Cross)
-if (tCross && !pcrIntake) {
-  if (intakeState == -1) {
-    intakeState = 0;   // turn off
-  } else {
-    intakeState = -1;  // reverse
+  pcIntake = tCircleIntake;
+
+  boolean tCrossIntake = controller.getCrossButton();
+
+  if (tCrossIntake && !pcrIntake) {
+    crintake = !crintake;
   }
+
+  pcrIntake = tCrossIntake;
+
+  if (cintake == true) {
+    shooter.runIntake(1);
+  } else if (cintake == false) {
+    shooter.runIntake(0.0);
+  } 
+
+  if (crintake == true) {
+    shooter.runIntake(-1);
+  } 
+
+if (controller.getTriangleButton()) {
+  shooter.extendActuators();
+} else if (controller.getSquareButton()) {
+  shooter.retractActuators();
+} 
+
+if (controller.getShareButton()) {
+  shooter.extendActuators2();
+} else if (controller.getOptionsButton()) {
+  shooter.retractActuators2();
 }
 
-// Save previous states
-pcIntake = tCircle;
-pcrIntake = tCross;
-
-// Apply motor output
-if (intakeState == 1) {
-  shooter.runIntake(1.0);
-} else if (intakeState == -1) {
-  shooter.runIntake(-1.0);
-} else {
-  shooter.runIntake(0.0);
-}
-
-
-
-
-//   boolean tCircleIntake = controller.getCircleButton();
-
-//   if (tCircleIntake && !pcIntake) {
-//     cintake = !cintake;
-//   }
-
-//   pcIntake = tCircleIntake;
-
-//   if (cintake == true) {
-//     shooter.runIntake(1.0);
-//   } else if (cintake == false) {
-//     shooter.runIntake(0.0);
-//   }
-
-// boolean tCrossIntake = controller.getCrossButton();
-
-//   if (tCrossIntake && !pcrIntake) {
-//     crintake = !crintake;
-//   }
-
-//   pcrIntake = tCrossIntake;
-
-//   if (crintake == true) {
-//     shooter.runIntake(-1.0);
-//   } else if (crintake == false) {
-//     shooter.runIntake(0.0);
-//   }
-
-
-  // Put autochoosers and smartdashboard into constructor, not into here
-   autoChooser.setDefaultOption("Drive and Shoot", new Autos(drive, shooter));
-  autoChooser.addOption("Do Nothing", null);
-  SmartDashboard.putData("Auto Modes", autoChooser);
-  
-
-
-    // shooter.runPositionMotor(controller.getR1Button());
   }
 }

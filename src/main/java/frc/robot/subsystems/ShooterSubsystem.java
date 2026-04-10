@@ -14,6 +14,7 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.PersistMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 // import edu.wpi.first.wpilibj.Timer;
 // import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 
@@ -45,7 +46,6 @@ public class ShooterSubsystem {
   // private double actuatorCommand = 0;
 
   // private final Timer actuatorTimer = new Timer();
-  //IDK HOW ENCODER DOES STUFF
 
   public ShooterSubsystem() {
 
@@ -70,8 +70,6 @@ public class ShooterSubsystem {
       intakeMotor.configure(intakeCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-
-
   public void runShooter(double trigger) {
 
     double output = 0;
@@ -92,10 +90,39 @@ public class ShooterSubsystem {
     intakeMotor.set(speed);
   }
 
+// Use TWO consistent PWM ports
+private final PWMSparkMax actuator1 = new PWMSparkMax(1);
+private final PWMSparkMax actuator2 = new PWMSparkMax(0);
+;
+
+// Extend both
+public void extendActuators() {
+  actuator1.set(1.0);
+}
+
+public void extendActuators2() {
+  actuator2.set(1.0);
+}
+
+// Retract both
+public void retractActuators() {
+  actuator1.set(-1.0);
+}
+
+public void retractActuators2() {
+  actuator2.set(-1.0);
+}
+
+// Stop both (VERY IMPORTANT)
+// public void stopActuators() {
+//   actuator1.set(-0.8);
+//   actuator2.set(-0.8);
+// }
   private boolean intakeOn = false;
 
 public void toggleIntake() {
     intakeOn = !intakeOn;
     runIntake(intakeOn ? 1 : 0);
 }
+
 }

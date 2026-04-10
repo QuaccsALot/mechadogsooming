@@ -19,13 +19,12 @@ public final class Constants {
   }
 
   public static final class ActuatorConstants {
-    public static final int PWM_PORT = 1;
-    public static final int PWM_PORT2 = 2; //Not sure how this works but I tried twin §
+    public static final int PWM_PORT = 0;
     public static final double RUN_TIME = 5.0;
   }
 
   public static final class ControllerConstants {
-    public static final int DRIVER_PORT = 0;
+    public static final int DRIVER_PORT = 1;
   }
 
 }
